@@ -1,0 +1,22 @@
+<br><br>
+<div class="container">
+	<h3>Enter Password:</h3> <br><input type="text" class="form-control" id="pass"><br><br>
+	<button class="btn btn-primary" id="submit">submit</button>
+</div>
+
+<script>
+	
+	$(function(){
+		$a = "<%= @password %>"; // edit 1
+		$ref = "<%= @ref %>";
+
+		$('#submit').click(function(){
+			if($('#pass').val() == $a){
+				window.location.href = '/secure/note/'+$ref
+			} else {
+				alert('wrong pass!');
+				$('#pass').val('');
+			}
+		});
+	});
+</script>
