@@ -11,9 +11,37 @@
 		body {
 			font-family: 'proxima-nova', sans-serif, !important;
 		}
+
+		.form-control {
+			border-radius: 0px;
+
+		}
 	</style>
 </head>
 <body>
-	<%= yield %>
+	<nav class="navbar navbar-default">
+  <div class="container">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Safenote</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <!-- <li><a href="#">Link</a></li> -->
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">By Karl Coelho</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+	<div class="container">
+		<%= yield %>
+	</div>
 </body>
 </html>

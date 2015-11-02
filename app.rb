@@ -5,6 +5,7 @@ require 'jwt'
 
 configure do
 	set :erb, layout: :layout
+	enable :sessions
 end
 
 app = Orchestrate::Application.new('6e965f04-d2be-4fab-aa92-a5cf63be50b4')
@@ -20,9 +21,7 @@ end
 
 post '/new' do
 	note = params[:note]
-	# puts note
 	password = JWT.encode({password: params[:password]}, 'nothackable')
-	# puts password
 
 	saved = notes << {note: note, pass: password}
 	ref = saved.id.gsub('notes/', '')
@@ -33,17 +32,34 @@ end
 get '/note/:id' do
 	id = params[:id]
 	note = notes[id].value
-	@password = JWT.decode(note["pass"], 'nothackable')[0]["password"]
-	@ref= notes[id].id.gsub('notes/', '')
-
-
-
+	@ref = notes[id].id.gsub('notes/', '')
+  # @ref = 'lol'
 	erb :secure
+end
+
+get '/verify/:id' do
+	id = params[:id]
+	pass = params[:pass]
+	note = notes[id].value
+	if pass == JWT.decode(note["pass"], 'nothackable')[0]["password"] 
+		puts "Note is verified! #{id}"
+		session[:verified] = true
+		redirect "/secure/note/#{id}"
+	else
+		puts "Note is not verified: #{id}"
+		redirect "/note/#{id}"
+	end
 end
 
 get '/secure/note/:id' do
 	id = params[:id]
-	@note = notes[id].value
-
-	erb :note
+	if session[:verified] == true
+		puts "success on secure page!"
+		@note = notes[id].value
+		session[:verified] = false
+		erb :note
+	else
+		puts "no success, redirecting back to note..."
+		redirect "/note/#{id}"
+	end
 end

@@ -1,10 +1,12 @@
-<div class="container">
-	<h1>New note</h1>
-	<form action="/new" method="post">
-		note:<br><textarea name="note" id="" cols="30" rows="3" class="form-control"></textarea>
-		<br><br>
-		password: <br> <input type="text" name="password" class="form-control">
-		<br><br>
-		<input type="submit" class="btn btn-primary" value="submit">
-	</form>
+<div class="row">
+ <div class="col-lg-8">
+   <h1>Create a new note</h1><br>
+<form action="/new" method="post">
+  <label for="">Note:</label><br><textarea name="note" id="" cols="30" rows="3" class="form-control" placeholder="Enter the contents of your note here..."></textarea>
+  <br><br>
+  <label for="">Password:</label><br><input placeholder="Enter a secure password for your note. And remember it!" type="text" name="password" class="form-control">
+  <br><br>
+  <input type="submit" class="btn btn-default" value="Submit">
+</form>
+ </div> 
 </div>
