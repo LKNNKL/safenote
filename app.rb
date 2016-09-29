@@ -8,6 +8,8 @@ configure do
 	enable :sessions
 end
 
+DB = Sequel.sqlite('./development.sqlite3') || Sequel.connect(ENV['DATABASE_URL'])
+
 app = Orchestrate::Application.new('6e965f04-d2be-4fab-aa92-a5cf63be50b4')
 notes = app[:notes]
 
