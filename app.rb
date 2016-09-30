@@ -2,16 +2,33 @@ require 'rack'
 require 'sinatra'
 require 'orchestrate'
 require 'jwt'
+require 'sequel'
+require 'bcrypt'
+require 'sqlite3' if development?
+require 'pg' if production?
 
 configure do
 	set :erb, layout: :layout
 	enable :sessions
 end
 
-DB = Sequel.sqlite('./development.sqlite3') || Sequel.connect(ENV['DATABASE_URL'])
+DB = Sequel.connect(ENV['DATABASE_URL']) || Sequel.sqlite('./development.sqlite3')
 
-app = Orchestrate::Application.new('6e965f04-d2be-4fab-aa92-a5cf63be50b4')
-notes = app[:notes]
+DB.create_table? :notes do
+	String :uid
+	String :content, :text => true
+	String :password
+end
+
+class Note < Sequel::Model
+end
+
+def rand_uid(length)
+  rand(36**length).to_s(36)
+end
+
+# app = Orchestrate::Application.new('6e965f04-d2be-4fab-aa92-a5cf63be50b4')
+# notes = app[:notes]
 
 get '/' do
 	erb :index
@@ -22,46 +39,55 @@ get '/new' do
 end
 
 post '/new' do
-	note = params[:note]
-	password = JWT.encode({password: params[:password]}, 'nothackable')
+	if params[:note] == '' || !params[:password] == ''
+		redirect '/new'
+	end
+	content = params[:note]
+	# password = JWT.encode({password: params[:password]}, 'nothackable')
+	password = BCrypt::Password.create(params[:password])
 
-	saved = notes << {note: note, pass: password}
-	ref = saved.id.gsub('notes/', '')
+	# saved = notes << {note: note, pass: password}
+	note = Note.create(
+			:uid => rand_uid(6),
+			:content => content,
+			:password => password
+			)
 
-	redirect "/note/#{ref}"
+	# ref = saved.id.gsub('notes/', '')
+	redirect "/note/#{note.uid}"
 end
 
-get '/note/:id' do
-	id = params[:id]
-	note = notes[id].value
-	@ref = notes[id].id.gsub('notes/', '')
-  # @ref = 'lol'
+get '/note/:uid' do
+	@uid = params[:uid]
 	erb :secure
 end
 
-get '/verify/:id' do
-	id = params[:id]
-	pass = params[:pass]
-	note = notes[id].value
-	if pass == JWT.decode(note["pass"], 'nothackable')[0]["password"] 
-		puts "Note is verified! #{id}"
+post '/verify/:uid' do
+	uid = params[:uid]
+	password = params[:password]
+	# note = notes[uid].value
+	notes = Note.where(:uid => uid)
+	note = notes.first
+	actual_password = BCrypt::Password.new(note.password)
+	if actual_password == password
+		# puts "Note is verified"
 		session[:verified] = true
-		redirect "/secure/note/#{id}"
+		redirect "/secure/note/#{uid}"
 	else
-		puts "Note is not verified: #{id}"
-		redirect "/note/#{id}"
+		# puts "Note is not verified: #{uid}"
+		redirect "/note/#{uid}"
 	end
 end
 
-get '/secure/note/:id' do
-	id = params[:id]
-	if session[:verified] == true
+get '/secure/note/:uid' do
+	uid = params[:uid]
+	if session[:verified]
 		puts "success on secure page!"
-		@note = notes[id].value
+		@note = Note.where(:uid => uid).first
 		session[:verified] = false
 		erb :note
 	else
 		puts "no success, redirecting back to note..."
-		redirect "/note/#{id}"
+		redirect "/note/#{uid}"
 	end
 end

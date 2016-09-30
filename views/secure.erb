@@ -1,18 +1,19 @@
 <br><br>
 	<div class="row">
 		<div class="col-lg-6">
-			<h3>Enter the password for this note:</h3> <br><input type="text" class="form-control" id="pass"><br>
-		<button class="btn btn-default" id="submit">Submit Password</button>
+		<form action="/verify/<%= @uid %>" method="POST">
+			<h3>Enter the password for this note:</h3><br><input type="password" class="form-control" id="password" name='password'><br>
+			<!-- <button id="submit">Submit Password</button> -->
+			<input type="submit" class="btn btn-default">
+		</form>
 		</div>
 	</div>
 
 <script>
 	$(function(){
-		$ref = "<%= @ref %>";
-
-		$('#submit').click(function(){
-			var pass = $('#pass').val();
-			window.location.href = '/verify/' + $ref + '?pass=' + pass;
-		});
+		// $('#submit').click(function(){
+		// 	var pass = $('#pass').val();
+		// 	window.location.href = '/verify/' + $ref + '?pass=' + pass;
+		// });
 	});
 </script>
