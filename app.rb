@@ -27,9 +27,6 @@ def rand_uid(length)
   rand(36**length).to_s(36)
 end
 
-# app = Orchestrate::Application.new('6e965f04-d2be-4fab-aa92-a5cf63be50b4')
-# notes = app[:notes]
-
 get '/' do
 	erb :index
 end
@@ -43,17 +40,14 @@ post '/new' do
 		redirect '/new'
 	end
 	content = params[:note]
-	# password = JWT.encode({password: params[:password]}, 'nothackable')
 	password = BCrypt::Password.create(params[:password])
 
-	# saved = notes << {note: note, pass: password}
 	note = Note.create(
 			:uid => rand_uid(6),
 			:content => content,
 			:password => password
 			)
 
-	# ref = saved.id.gsub('notes/', '')
 	redirect "/note/#{note.uid}"
 end
 
@@ -65,16 +59,13 @@ end
 post '/verify/:uid' do
 	uid = params[:uid]
 	password = params[:password]
-	# note = notes[uid].value
 	notes = Note.where(:uid => uid)
 	note = notes.first
 	actual_password = BCrypt::Password.new(note.password)
 	if actual_password == password
-		# puts "Note is verified"
 		session[:verified] = true
 		redirect "/secure/note/#{uid}"
 	else
-		# puts "Note is not verified: #{uid}"
 		redirect "/note/#{uid}"
 	end
 end
