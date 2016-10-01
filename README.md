@@ -1,6 +1,6 @@
 # Safenote
-Secure note taking, made simple.
 ![lol](https://img.shields.io/badge/secure-true-brightgreen.svg)
+Secure note taking, made simple.
 <br>
 
 Safenote is a note taking web application, with a focus on security.<br>
