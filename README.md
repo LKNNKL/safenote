@@ -2,6 +2,7 @@
 ## Secure note taking, made simple.
 
 Safenote is a note taking web application, with a focus on security.
+Check it out at http://safenote.coelho.xyz
 
 ### Secure
 We use BCrypt to secure each and every note on the app.
